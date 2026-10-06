@@ -24,6 +24,6 @@
 
 | # | Pergunta | Quando |
 |---|---|---|
-| P-09 | Portas locais (Postgres, RustFS, Mailpit), para não colidirem com o Orçô. O app já foi decidido: 3010 (NBB-102 D3-A) | M0, issue do banco local |
+| P-09 | ~~Portas locais~~ **Resolvido:** app 3010 (NBB-102 D3-A); Postgres 55442, RustFS 9010/9011 e Mailpit 1035/8035 (NBB-104 B1-A). | — |
 | P-10 | Rotas fora do Basic Auth no staging | M0, issue do deploy |
 | P-11 | Nome do bucket do RustFS | M2 |

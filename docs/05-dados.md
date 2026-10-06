@@ -12,8 +12,14 @@
 | `public` | tabelas do produto | só a role **`app_user`**, sempre com RLS |
 | `app` | funções auxiliares (ex.: `app.current_user_id()`, `app.is_admin()`) | `app_user` (execute) |
 
-- A role **`codetomb_owner`** é dona de tudo e só é usada pelas migrations.
+- A role **`codetomb_owner`** é dona de tudo e só é usada pelas migrations (nomes confirmados na NBB-104 B2-A).
 - `app_user` e `app_auth` não têm `BYPASSRLS` nem permissão para mudar o schema.
+- **Base de segurança (NBB-104, migration `0000_base_security`):**
+  - `public` e `auth` fechados para `PUBLIC`; `app_user` só usa `public` e `app`, e `app_auth` só usa `auth`;
+  - **permissões automáticas:** toda tabela que a `codetomb_owner` criar em `public` já nasce com `SELECT`, `INSERT`, `UPDATE` e `DELETE` para a `app_user` (e, em `auth`, para a `app_auth`). Sem RLS e policies, a `app_user` continua sem ver nada, porque as tabelas usam `FORCE ROW LEVEL SECURITY`;
+  - nenhuma função é executável por padrão: cada uma concede `EXECUTE` só à role que precisa;
+  - `app.current_user_id()`: o usuário da transação, ou `NULL` fora do `withUserDb`.
+- Os **invariantes** (roles sem superusuário nem `BYPASSRLS`, funções da dona com `search_path` vazio, nenhuma função para `PUBLIC`, toda tabela com RLS forçada e policy, as permissões exatas da `app_user`) são conferidos a cada CI em `tests/integration/security-invariants.test.ts`.
 
 ## Convenções
 

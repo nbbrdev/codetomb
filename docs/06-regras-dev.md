@@ -73,7 +73,16 @@ Antes de qualquer feature ou PR: **isso adiciona passo, campo obrigatório ou te
 - Tabela nova = `ENABLE` e `FORCE ROW LEVEL SECURITY`, policies, grants e **teste de RLS**, no mesmo PR, e [05-dados.md](05-dados.md) atualizado.
 - Uma migration aplicada nunca é editada. Toda migration é compatível com a versão anterior do código (o banco muda antes do código no deploy).
 - Nunca alterar o banco do staging ou da produção à mão. A única exceção é o comando SQL documentado para promover um admin (RN-37).
-- O app roda localmente em `http://localhost:3010` (`npm run dev` e `npm run start`; NBB-102 D3-A). As portas locais do Postgres, do RustFS e do Mailpit são decididas na issue do banco local, para não colidirem com as do Orçô.
+- O app roda localmente em `http://localhost:3010` (`npm run dev` e `npm run start`; NBB-102 D3-A).
+- **Banco local (NBB-104):** `npm run db:start` / `db:stop` sobem e descem o `compose.dev.yaml`, com as portas do Orçô + 10 para os dois projetos rodarem juntos (B1-A):
+  - Postgres em `127.0.0.1:55442`;
+  - RustFS em `:9010`, com console em `:9011` (usado a partir da M2);
+  - Mailpit em `:1035` (SMTP), com a caixa de entrada em `http://localhost:8035` (usado a partir da M1).
+
+  As credenciais locais são fictícias (as mesmas do `.env.example`; copie-o para `.env.local`). `npm run db:reset` apaga os dados e recria tudo do zero (roles e migrations).
+- **Roles:** nascem uma vez por banco novo, pelo `db/bootstrap/roles.sql`, executado como superusuário pelo `init.sh` do container, pelo CI e, na VPS, pelo mesmo `init.sh`. Schemas, permissões automáticas e funções auxiliares ficam nas migrations (`0000_base_security.sql`).
+- **Aplicar migrations:** `npm run db:migrate` (role `codetomb_owner`, pelo `scripts/migrate.mts`). Migration só de SQL escrito à mão: `npx drizzle-kit generate --custom --name <nome>`.
+- **Docker Desktop fechado** derruba o banco local: "connection refused" nos testes de integração. Confira `docker ps` antes de procurar erro no código.
 
 ## 7. Testes
 
@@ -89,7 +98,7 @@ Antes de qualquer feature ou PR: **isso adiciona passo, campo obrigatório ou te
 |---|---|
 | `npm test` | só os unitários (o do dia a dia) |
 | `npm run test:watch` | unitários, repetindo a cada alteração |
-| `npm run test:integration` | só a integração (a partir da NBB-104, com o banco local ligado) |
+| `npm run test:integration` | só a integração (precisa do `db:start` e do `db:migrate`) |
 | `npm run test:coverage` | unitários e integração numa execução só, com o relatório de cobertura (no terminal e em `coverage/index.html`) |
 | `npm run test:e2e` | E2E com o Playwright (precisa de `npm run build` antes; na primeira vez, `npx playwright install chromium`) |
 
@@ -102,7 +111,7 @@ Antes de qualquer feature ou PR: **isso adiciona passo, campo obrigatório ou te
 - Todo arquivo dessas pastas aparece no relatório, mesmo sem teste, para nada ficar escondido. Ficam de fora as Server Actions (`actions.ts`), o `src/lib/utils.ts` e os componentes `.tsx`, que o E2E testa.
 - **Trava no CI:** 80% de linhas, comandos e funções. O CI falha se ficar abaixo.
 
-**No CI (`.github/workflows/ci.yml`):** Prettier → lint → tipos → testes com cobertura → build → E2E → `npm audit --audit-level=high --omit=dev`. O CodeQL (`codeql.yml`) e o título do PR (`pr-title.yml`) rodam em workflows próprios.
+**No CI (`.github/workflows/ci.yml`):** Prettier → lint → tipos → roles e migrations num Postgres temporário (service container) → testes com cobertura → build → E2E → `npm audit --audit-level=high --omit=dev`. O CodeQL (`codeql.yml`) e o título do PR (`pr-title.yml`) rodam em workflows próprios.
 
 ## 8. Variáveis de ambiente
 
