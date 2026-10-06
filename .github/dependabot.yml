@@ -1,0 +1,48 @@
+# Atualizações automáticas de dependências (ADR-0009, NBB-103 W3-A): semanais, minor/patch agrupados.
+# Docker (Dockerfile) e Compose entram com a NBB-104 e a NBB-106, quando esses arquivos existirem.
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: America/Sao_Paulo
+    open-pull-requests-limit: 10
+    labels: [dependencies]
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      npm-minor-e-patch:
+        update-types: [minor, patch]
+    # Majors ignorados de propósito (revisar periodicamente):
+    ignore:
+      # Os tipos do Node acompanham o runtime do projeto (Node 24, .nvmrc).
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      # ESLint 10: eslint-plugin-react (via eslint-config-next) ainda quebra (NBB-102 D2-A).
+      # Remover quando o eslint-config-next suportar ESLint 10.
+      - dependency-name: eslint
+        update-types: ["version-update:semver-major"]
+      # TypeScript 7 (reescrito em Go): typescript-eslint ainda não suporta (NBB-102 D2-A).
+      # Remover quando o typescript-eslint suportar TS 7.
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: America/Sao_Paulo
+    labels: [dependencies]
+    commit-message:
+      prefix: ci
+      include: scope
+    groups:
+      actions:
+        patterns: ["*"]

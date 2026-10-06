@@ -90,12 +90,19 @@ Antes de qualquer feature ou PR: **isso adiciona passo, campo obrigatório ou te
 | `npm test` | só os unitários (o do dia a dia) |
 | `npm run test:watch` | unitários, repetindo a cada alteração |
 | `npm run test:integration` | só a integração (a partir da NBB-104, com o banco local ligado) |
+| `npm run test:coverage` | unitários e integração numa execução só, com o relatório de cobertura (no terminal e em `coverage/index.html`) |
 | `npm run test:e2e` | E2E com o Playwright (precisa de `npm run build` antes; na primeira vez, `npx playwright install chromium`) |
 
 - Bug corrigido = teste que reproduz o bug.
 - Dados sempre fictícios (`@example.com`), nunca reais.
 - Testes de integração criam e apagam o que usam, sem depender da ordem.
-- A trava de cobertura do CI é decidida na issue dos workflows.
+
+**Cobertura (NBB-103 W2-A):**
+- Mede quais linhas de `src/lib/` e dos arquivos `.ts` de `src/features/` os testes executaram. Unitários e integração rodam juntos, para o relatório somar os dois.
+- Todo arquivo dessas pastas aparece no relatório, mesmo sem teste, para nada ficar escondido. Ficam de fora as Server Actions (`actions.ts`), o `src/lib/utils.ts` e os componentes `.tsx`, que o E2E testa.
+- **Trava no CI:** 80% de linhas, comandos e funções. O CI falha se ficar abaixo.
+
+**No CI (`.github/workflows/ci.yml`):** Prettier → lint → tipos → testes com cobertura → build → E2E → `npm audit --audit-level=high --omit=dev`. O CodeQL (`codeql.yml`) e o título do PR (`pr-title.yml`) rodam em workflows próprios.
 
 ## 8. Variáveis de ambiente
 

@@ -1,0 +1,64 @@
+# Verificação de todo PR e de todo push na main (ADR-0009, docs/06-regras-dev.md §7).
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Postgres, RustFS e Mailpit entram aqui como serviços na NBB-104, junto com o banco.
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Node (versão do .nvmrc) com cache do npm
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Instalar dependências (exatamente o lockfile)
+        run: npm ci
+
+      - name: Formatação (Prettier)
+        run: npm run format:check
+
+      - name: Lint (ESLint)
+        run: npm run lint
+
+      - name: Tipos (TypeScript)
+        run: npm run typecheck
+
+      # Unitários e integração numa execução só, para a cobertura somar os dois. Trava de 80%
+      # (vitest.config.mts, NBB-103 W2-A).
+      - name: Testes com cobertura (Vitest)
+        run: npm run test:coverage
+
+      - name: Build
+        run: npm run build
+
+      # E2E: o app compilado no navegador (computador e celular emulado).
+      - name: Navegador do Playwright (Chromium)
+        run: npx playwright install --with-deps chromium
+
+      - name: Testes E2E (Playwright)
+        run: npm run test:e2e
+
+      # Só as dependências de produção (o que roda no servidor). Alertas em ferramentas de
+      # desenvolvimento chegam pelo Dependabot, sem travar o CI (NBB-102 V1-A, docs/07 §11).
+      - name: Auditoria de dependências
+        run: npm audit --audit-level=high --omit=dev
