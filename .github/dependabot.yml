@@ -1,5 +1,5 @@
 # Atualizações automáticas de dependências (ADR-0009, NBB-103 W3-A): semanais, minor/patch agrupados.
-# Docker (Dockerfile) e Compose entram com a NBB-104 e a NBB-106, quando esses arquivos existirem.
+# O Docker (Dockerfile) e o compose da VPS (/deploy) entram com a NBB-106, quando esses arquivos existirem.
 version: 2
 
 updates:
@@ -30,6 +30,26 @@ updates:
       # TypeScript 7 (reescrito em Go): typescript-eslint ainda não suporta (NBB-102 D2-A).
       # Remover quando o typescript-eslint suportar TS 7.
       - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
+
+  # Imagens do compose local (Postgres, RustFS, Mailpit). A pasta /deploy entra na NBB-106.
+  - package-ecosystem: docker-compose
+    directories: ["/"]
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: America/Sao_Paulo
+    labels: [dependencies]
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      compose:
+        patterns: ["*"]
+    ignore:
+      # Major do Postgres (17 → 18) não é só trocar a imagem: exige dump e restauração dos dados.
+      - dependency-name: postgres
         update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions

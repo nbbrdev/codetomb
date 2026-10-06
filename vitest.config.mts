@@ -18,12 +18,12 @@ export default defineConfig({
         test: { name: "unit", include: ["tests/unit/**/*.test.ts"] },
       },
       {
-        // Contra Postgres e RustFS reais (compose.dev.yaml ou os service containers do CI), a partir
-        // da NBB-104.
+        // Contra o Postgres real (compose.dev.yaml ou o service container do CI).
         extends: true,
         test: {
           name: "integration",
           include: ["tests/integration/**/*.test.ts"],
+          setupFiles: ["tests/integration/setup.ts"],
           fileParallelism: false,
         },
       },
