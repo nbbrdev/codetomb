@@ -91,6 +91,7 @@
 
 - CodeQL (`security-extended`, bloqueante), Dependabot e `npm audit --omit=dev` no CI.
 - Actions de terceiros fixadas por SHA; `permissions:` mínimas por job.
+- **Risco aceito (NBB-102 V1-A, 2026-10-06):** o `npm audit` acusa uma falha "alta" no pacote `braces` ([GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm)): um padrão com chaves aninhadas demais trava o processo (negação de serviço). Ela chega só por **ferramentas de desenvolvimento** (`eslint-config-next` e o CLI do `shadcn`, via `fast-glob` → `micromatch` → `braces`), que leem apenas os padrões dos nossos arquivos de configuração. Nada disso vai para a imagem Docker, e o `npm audit --omit=dev` dá 0. Ainda não existe versão corrigida do `braces` (a 3.0.3 é a mais recente), e o `npm audit fix --force` rebaixaria o `eslint-config-next` e o `shadcn` para versões incompatíveis. Revisar quando o Dependabot avisar de uma versão corrigida.
 
 ## 12. Logs e privacidade (LGPD)
 

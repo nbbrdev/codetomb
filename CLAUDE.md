@@ -1,5 +1,7 @@
 # Codetomb — instruções para agentes
 
+@AGENTS.md
+
 Rede social para desenvolvedores divulgarem projetos abandonados e o motivo, conversarem e, quem sabe, revivê-los em equipe (slug técnico `codetomb`). Next.js 16 + PostgreSQL 17 (Drizzle, RLS) + Better Auth + RustFS, numa **VPS própria com Docker Compose e Nginx** (a mesma do Orçô; guia da máquina no repositório privado `nbbrdev/vps`).
 Produção: <https://codetomb.nbbrdev.com> ("Em breve" até a `v1.0.0`) · Staging: <https://staging.codetomb.nbbrdev.com> · Repo: `nbbrdev/codetomb` (público) · Linear: time "Nbbr dev" (chave `NBB`), projeto "Codetomb".
 
