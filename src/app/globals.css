@@ -2,42 +2,63 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+/*
+ * Tema escuro (docs/12-identidade-visual.md, NBB-105 V7-A): o next-themes aplica a classe `.dark`
+ * no <html>. Padrão "Automático" (segue o sistema); o botão para fixar Claro ou Escuro vem na M1.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
-  --font-heading: var(--font-sans);
-  --font-sans: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --color-foreground: var(--foreground);
+  /* Fontes (V3-B): as variáveis vêm do next/font, em src/app/layout.tsx. */
+  --font-sans:
+    var(--font-geist), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-heading: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Consolas, monospace;
+
   --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Estados do projeto (V2-A, RN-11): sempre com emoji e nome, nunca só a cor. */
+  --color-state-life-support: var(--state-life-support);
+  --color-state-life-support-bg: var(--state-life-support-bg);
+  --color-state-abandoned: var(--state-abandoned);
+  --color-state-abandoned-bg: var(--state-abandoned-bg);
+  --color-state-seeking-team: var(--state-seeking-team);
+  --color-state-seeking-team-bg: var(--state-seeking-team-bg);
+  --color-state-revived: var(--state-revived);
+  --color-state-revived-bg: var(--state-revived-bg);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -47,83 +68,170 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* Tema claro, direção Musgo (V1-A): verde-musgo e cinza de pedra. Contraste AA conferido no docs/12. */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  color-scheme: light;
+  /* Cantos de 8 px (V4-A). */
+  --radius: 0.5rem;
+
+  --background: #f5f6f2;
+  --foreground: #1b2117;
+  --card: #ffffff;
+  --card-foreground: #1b2117;
+  --popover: #ffffff;
+  --popover-foreground: #1b2117;
+  --primary: #3f6b2e;
+  --primary-foreground: #ffffff;
+  --primary-hover: #335824;
+  --secondary: #e8f0e1;
+  --secondary-foreground: #335824;
+  --muted: #eceee8;
+  --muted-foreground: #5a6455;
+  --accent: #e8f0e1;
+  --accent-foreground: #1b2117;
+  --destructive: #b91c1c;
+  --border: #dce0d6;
+  --input: #dce0d6;
+  --ring: #3f6b2e;
+
+  --state-life-support: #b45309;
+  --state-life-support-bg: #fef3c7;
+  --state-abandoned: #52525b;
+  --state-abandoned-bg: #eeeef0;
+  --state-seeking-team: #1d4ed8;
+  --state-seeking-team-bg: #dbeafe;
+  --state-revived: #15803d;
+  --state-revived-bg: #dcfce7;
+
+  --chart-1: #3f6b2e;
+  --chart-2: #9bc77a;
+  --chart-3: #5a6455;
+  --chart-4: #1d4ed8;
+  --chart-5: #b45309;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1b2117;
+  --sidebar-primary: #3f6b2e;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e8f0e1;
+  --sidebar-accent-foreground: #1b2117;
+  --sidebar-border: #dce0d6;
+  --sidebar-ring: #3f6b2e;
 }
 
+/* Tema escuro: classe `.dark` aplicada pelo next-themes. */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  color-scheme: dark;
+
+  --background: #10130f;
+  --foreground: #e6eae1;
+  --card: #171b15;
+  --card-foreground: #e6eae1;
+  --popover: #171b15;
+  --popover-foreground: #e6eae1;
+  --primary: #9bc77a;
+  --primary-foreground: #132010;
+  --primary-hover: #b2d695;
+  --secondary: #1e2a18;
+  --secondary-foreground: #b2d695;
+  --muted: #1f251c;
+  --muted-foreground: #9aa392;
+  --accent: #1e2a18;
+  --accent-foreground: #e6eae1;
+  --destructive: #f87171;
+  --border: #2a3026;
+  --input: #2a3026;
+  --ring: #9bc77a;
+
+  --state-life-support: #fbbf24;
+  --state-life-support-bg: #2e2410;
+  --state-abandoned: #a1a1aa;
+  --state-abandoned-bg: #232327;
+  --state-seeking-team: #93c5fd;
+  --state-seeking-team-bg: #13223f;
+  --state-revived: #4ade80;
+  --state-revived-bg: #0f2a1a;
+
+  --chart-1: #9bc77a;
+  --chart-2: #3f6b2e;
+  --chart-3: #9aa392;
+  --chart-4: #93c5fd;
+  --chart-5: #fbbf24;
+  --sidebar: #171b15;
+  --sidebar-foreground: #e6eae1;
+  --sidebar-primary: #9bc77a;
+  --sidebar-primary-foreground: #132010;
+  --sidebar-accent: #1e2a18;
+  --sidebar-accent-foreground: #e6eae1;
+  --sidebar-border: #2a3026;
+  --sidebar-ring: #9bc77a;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
   html {
     @apply font-sans;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  /* Títulos em Fraunces (V3-B), com quebra de linha equilibrada. */
+  h1,
+  h2,
+  h3 {
+    @apply font-heading;
+    text-wrap: balance;
+  }
+  /* Foco do teclado sempre visível, na cor da marca (V4-A). */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/*
+ * Alvos de toque no celular (V4-A, igual ao Orçô): abaixo de 640 px, botões, campos e itens de menu
+ * têm pelo menos --touch-target de altura; os botões de ícone e o switch mantêm o desenho e ganham
+ * uma área de toque invisível desse tamanho. No computador, nada muda.
+ * Fica fora das camadas do Tailwind de propósito, para valer sobre as classes de altura (h-8, h-9).
+ * O botão é achado por [data-variant][data-size], e não pelo data-slot, porque um gatilho de menu
+ * ou popover (asChild) troca o data-slot dele.
+ * Para testar outro tamanho, mude a variável; para reverter, apague este bloco.
+ */
+:root {
+  --touch-target: 2.75rem;
+}
+
+@media (width < 40rem) {
+  [data-variant][data-size]:not([data-size^="icon"]):not([data-variant="link"]),
+  input:not([type="checkbox"], [type="radio"], [type="file"], [type="hidden"]),
+  [data-slot="input-group"],
+  [data-slot="dropdown-menu-item"],
+  [data-slot="command-item"] {
+    min-height: var(--touch-target);
+  }
+
+  [data-variant][data-size^="icon"]:not(.absolute),
+  [data-slot="switch"] {
+    position: relative;
+  }
+
+  [data-variant][data-size^="icon"]::after,
+  [data-slot="switch"]::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, var(--touch-target));
+    height: max(100%, var(--touch-target));
+    transform: translate(-50%, -50%);
   }
 }

@@ -18,7 +18,7 @@
 | P-05 | Formato do endereço do projeto e do perfil (`/projetos/[id]`, `/@usuario`) | M1 e M2 |
 | P-06 | Motivos da lista de denúncia | M5 |
 | P-07 | Texto dos termos de uso e da política de privacidade | M6 |
-| P-08 | Identidade visual (rodada V) | M0 |
+| P-08 | ~~Identidade visual~~ **Resolvido:** Musgo, Fraunces + Geist, lápide com `</>`, humor nas bordas ([12-identidade-visual.md](12-identidade-visual.md), NBB-105). | — |
 
 ## Infra
 
