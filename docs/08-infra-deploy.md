@@ -1,6 +1,6 @@
 # 08 — Infra e deploy
 
-> Status: decisões I1–I7 e F5 do usuário (2026-10-05 e 2026-10-06); detalhes ⏳ até a M0 · Última atualização: 2026-10-06
+> Status: decisões I1–I7 e F5 do usuário (2026-10-05 e 2026-10-06), e a porta local 3010 (NBB-102 D3-A); detalhes ⏳ até a M0 · Última atualização: 2026-10-06
 >
 > Segue o modelo do Orçô. A base da VPS (SSH, firewall, Nginx, Certbot, usuário `deploy`) está no repositório privado `nbbrdev/vps`. Aqui fica só o que é do Codetomb.
 >
@@ -10,7 +10,7 @@
 
 | Ambiente | Onde | Dados | Quando atualiza |
 |---|---|---|---|
-| Local | `npm run dev` (`APP_ENV=development`) | `compose.dev.yaml`: Postgres, RustFS e Mailpit | — |
+| Local | `npm run dev` em `http://localhost:3010` (`APP_ENV=development`; NBB-102 D3-A) | `compose.dev.yaml`: Postgres, RustFS e Mailpit | — |
 | **Staging** | `https://staging.codetomb.nbbrdev.com` (`APP_ENV=staging`) | Postgres e RustFS próprios, dados fictícios | merge na `main` com CI verde (`staging.yml`) |
 | **Produção** | `https://codetomb.nbbrdev.com` (`APP_ENV=production`) | Postgres e RustFS próprios | **release criada pelo usuário** (`production.yml`) |
 
@@ -78,7 +78,7 @@ Três OAuth Apps, criadas pelo usuário em github.com → Settings → Developer
 
 | App | Homepage | Endereço de retorno |
 |---|---|---|
-| `Codetomb (dev)` | `http://localhost:3000` | `http://localhost:3000/api/auth/callback/github` |
+| `Codetomb (dev)` | `http://localhost:3010` | `http://localhost:3010/api/auth/callback/github` |
 | `Codetomb (staging)` | `https://staging.codetomb.nbbrdev.com` | `https://staging.codetomb.nbbrdev.com/api/auth/callback/github` |
 | `Codetomb` | `https://codetomb.nbbrdev.com` | `https://codetomb.nbbrdev.com/api/auth/callback/github` |
 

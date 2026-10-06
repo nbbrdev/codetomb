@@ -73,7 +73,7 @@ Antes de qualquer feature ou PR: **isso adiciona passo, campo obrigatório ou te
 - Tabela nova = `ENABLE` e `FORCE ROW LEVEL SECURITY`, policies, grants e **teste de RLS**, no mesmo PR, e [05-dados.md](05-dados.md) atualizado.
 - Uma migration aplicada nunca é editada. Toda migration é compatível com a versão anterior do código (o banco muda antes do código no deploy).
 - Nunca alterar o banco do staging ou da produção à mão. A única exceção é o comando SQL documentado para promover um admin (RN-37).
-- As portas locais (Postgres, RustFS e Mailpit) são decididas na issue do banco local, para não colidirem com as do Orçô.
+- O app roda localmente em `http://localhost:3010` (`npm run dev` e `npm run start`; NBB-102 D3-A). As portas locais do Postgres, do RustFS e do Mailpit são decididas na issue do banco local, para não colidirem com as do Orçô.
 
 ## 7. Testes
 
@@ -82,6 +82,15 @@ Antes de qualquer feature ou PR: **isso adiciona passo, campo obrigatório ou te
 | **Unitário** | funções isoladas: schemas Zod, pontuação do "em alta", Markdown seguro, CSP | Vitest, `tests/unit/` |
 | **Integração** | o código com **Postgres e RustFS reais**: RLS, roles, funções, limites, upload, e-mail pelo Mailpit | Vitest, `tests/integration/` |
 | **E2E** | fluxos inteiros no navegador (RNF-07) | Playwright, `tests/e2e/` |
+
+**Como rodar:**
+
+| Comando | Roda |
+|---|---|
+| `npm test` | só os unitários (o do dia a dia) |
+| `npm run test:watch` | unitários, repetindo a cada alteração |
+| `npm run test:integration` | só a integração (a partir da NBB-104, com o banco local ligado) |
+| `npm run test:e2e` | E2E com o Playwright (precisa de `npm run build` antes; na primeira vez, `npx playwright install chromium`) |
 
 - Bug corrigido = teste que reproduz o bug.
 - Dados sempre fictícios (`@example.com`), nunca reais.
