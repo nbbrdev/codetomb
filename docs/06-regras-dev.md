@@ -125,8 +125,11 @@ Listadas, sem valores, em `.env.example` e `deploy/env.example`. Segredos só no
 | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` (uma OAuth App por ambiente, I7-A) | **sim** |
 | `S3_ENDPOINT`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` | **sim** |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `EMAIL_FROM` | **sim** |
-| `STAGING_BASIC_AUTH_USER`, `STAGING_BASIC_AUTH_PASSWORD` (só no staging) | **sim** |
-| `NEXT_PUBLIC_APP_VERSION` (injetada no build) | não |
+| `STAGING_BASIC_AUTH_USER`, `STAGING_BASIC_AUTH_PASSWORD` (só no staging; sem elas, o staging responde 503) | **sim** |
+| `PUBLIC_LAUNCH` (só na produção; `true` abre o site, ausente = "Em breve", NBB-106 E3-A) | não |
+| `NEXT_PUBLIC_APP_VERSION` (injetada no build: `vX.Y.Z`, `staging-<commit>`; ausente = `dev`) | não |
+
+- **Na VPS:** `APP_PORT`, `DB_PORT`, `POSTGRES_PASSWORD` e as senhas das roles (`CODETOMB_OWNER_PASSWORD`, `APP_USER_PASSWORD`, `APP_AUTH_PASSWORD`) também ficam no `.env` de cada ambiente; o `deploy/compose.yaml` monta as `DATABASE_URL_*` a partir delas. Variável nova do app entra no `environment:` do serviço `app` e no `deploy/env.example`.
 
 ## 9. Definição de pronto (DoD)
 

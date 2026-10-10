@@ -78,8 +78,10 @@
 
 ## 9. Staging
 
-- HTTP Basic Auth em todas as rotas, exceto as rotas do Better Auth (o retorno do GitHub) e a de imagens. Quais rotas ficam de fora será confirmado na M0.
+- **HTTP Basic Auth em todas as rotas, sem exceções por enquanto** (NBB-106 E5-A). O retorno do login do GitHub (M1) passa pelo navegador, que já tem a senha guardada. Exceções entram quando surgir a necessidade, com teste.
+- A senha é comparada em tempo constante (`src/lib/basic-auth.ts`). Sem as credenciais configuradas, o staging responde **503**: nunca fica aberto por esquecimento.
 - `X-Robots-Tag: noindex, nofollow` e dados sempre fictícios.
+- **Produção antes do lançamento:** toda rota mostra o "Em breve", com `noindex`; o site só abre com `PUBLIC_LAUNCH=true` (fechado por padrão, ADR-0008).
 
 ## 10. Segredos e repositório público
 
