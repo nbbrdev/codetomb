@@ -1,8 +1,8 @@
 # 08 — Infra e deploy
 
-> Status: decisões I1–I7 e F5 do usuário (2026-10-05 e 2026-10-06), e a porta local 3010 (NBB-102 D3-A); detalhes ⏳ até a M0 · Última atualização: 2026-10-06
+> Status: decisões I1–I7 e F5 do usuário (2026-10-05 e 2026-10-06), a porta local 3010 (NBB-102 D3-A) e o deploy (NBB-106, E1–E7, 2026-10-10) · Última atualização: 2026-10-10
 >
-> Segue o modelo do Orçô. A base da VPS (SSH, firewall, Nginx, Certbot, usuário `deploy`) está no repositório privado `nbbrdev/vps`. Aqui fica só o que é do Codetomb.
+> Segue o modelo do Orçô. A base da VPS (SSH, firewall, Nginx, Certbot, usuário `deploy`) está no repositório privado `nbbrdev/vps`. Aqui fica só o que é do Codetomb. O passo a passo da VPS está em [`deploy/README.md`](../deploy/README.md).
 >
 > Nunca escreva o IP da VPS, senhas, chaves ou o conteúdo de `.env` neste repositório.
 
@@ -11,11 +11,13 @@
 | Ambiente | Onde | Dados | Quando atualiza |
 |---|---|---|---|
 | Local | `npm run dev` em `http://localhost:3010` (`APP_ENV=development`; NBB-102 D3-A) | `compose.dev.yaml`: Postgres, RustFS e Mailpit | — |
-| **Staging** | `https://staging.codetomb.nbbrdev.com` (`APP_ENV=staging`) | Postgres e RustFS próprios, dados fictícios | merge na `main` com CI verde (`staging.yml`) |
-| **Produção** | `https://codetomb.nbbrdev.com` (`APP_ENV=production`) | Postgres e RustFS próprios | **release criada pelo usuário** (`production.yml`) |
+| **Staging** | `https://staging.codetomb.nbbrdev.com` (`APP_ENV=staging`) | Postgres próprio (RustFS a partir da M2), dados fictícios | merge na `main` com CI verde (`staging.yml`) |
+| **Produção** | `https://codetomb.nbbrdev.com` (`APP_ENV=production`) | Postgres próprio (RustFS a partir da M2) | **release criada pelo usuário** (`production.yml`) |
 
 - **Não há preview por PR.** O PR é revisado pelo código, pela explicação, pelo CI e rodando a branch localmente.
-- **Até a `v1.0.0`, a produção mostra só "Em breve"** (F5-A, [ADR-0008](decisoes/0008-versionamento-releases-e-em-breve.md)).
+- **Até a `v1.0.0`, a produção mostra só "Em breve"** (F5-A, [ADR-0008](decisoes/0008-versionamento-releases-e-em-breve.md)): fechado por padrão, abre só com `PUBLIC_LAUNCH=true` no `.env` da produção (NBB-106 E3-A). Toda rota mostra o "Em breve", com `noindex` (E4-A).
+- **Staging:** HTTP Basic Auth em **todas** as rotas, sem exceções por enquanto (NBB-106 E5-A), e `noindex`.
+- **Versão no ar:** no rodapé das páginas (E6-A), vinda da `NEXT_PUBLIC_APP_VERSION` gravada no build: `staging-<commit curto>` ou `vX.Y.Z`.
 
 ## Na VPS ([ADR-0007](decisoes/0007-hospedagem-vps.md))
 
@@ -27,7 +29,8 @@
 ```
 
 - Dois **projetos Compose** (`codetomb-staging` e `codetomb-production`), cada um com **rede e volumes próprios**. Nada do Codetomb alcança o Orçô, e o staging não alcança a produção.
-- **Serviços:** `app`, `migrate` (aplica as migrations com a role dona), `db` (Postgres 17, versão fixa) e `rustfs` (versão fixa, **sem porta publicada**).
+- **Serviços (NBB-106 E2-A):** `app`, `migrate` (aplica as migrations com a role dona) e `db` (Postgres 17, versão fixa). O `rustfs` (versão fixa, **sem porta publicada**) entra na M2, com as imagens.
+- **Imagem:** `ghcr.io/nbbrdev/codetomb`, **pública** (E7-A), construída pelo `Dockerfile` em etapas. Ela leva o app (Next standalone, usuário não-root), o migrator e os arquivos de deploy (`compose.yaml`, `init.sh`, `roles.sql`).
 - **Portas, só em `127.0.0.1`** (I3-A):
 
   | Serviço | Produção | Staging |
@@ -36,7 +39,7 @@
   | db (para o backup por túnel SSH) | 5442 | 5443 |
 
 - **Hardening do app:** usuário não-root, `read_only` com `tmpfs` em `/tmp`, `no-new-privileges`, `restart: unless-stopped`, logs limitados (10 MB × 3), só sobe depois do banco saudável, e recebe só as variáveis que usa.
-- **Recursos:** o Codetomb soma um Postgres, um RustFS e um app por ambiente à KVM 2. No primeiro deploy, conferir a memória livre e o disco (`free -h`, `df -h`, `docker system df`).
+- **Recursos:** o Codetomb soma um Postgres e um app por ambiente à KVM 2 (e um RustFS na M2). Antes do primeiro deploy, conferir a memória livre e o disco (`free -h`, `df -h`, `docker stats`).
 
 ## Nginx e DNS (I1-A)
 
@@ -90,13 +93,4 @@ Três OAuth Apps, criadas pelo usuário em github.com → Settings → Developer
 
 ## Operação (na VPS)
 
-```bash
-p() { sudo docker compose --project-directory "/opt/codetomb/$1" -p "codetomb-$1" --env-file "/opt/codetomb/$1/.env" --env-file "/opt/codetomb/$1/image.env" "${@:2}"; }
-```
-
-| Tarefa | Comando |
-|---|---|
-| O que está rodando | `p staging ps` |
-| Logs do app | `p staging logs -f app` |
-| Reiniciar o app | `p staging restart app` |
-| Versão no ar | `sudo cat /opt/codetomb/staging/image.env` |
+Comandos e atalho em [`deploy/README.md`](../deploy/README.md), seção "Operação" (ver o que está rodando, logs, reiniciar, recriar o app depois de mudar o `.env`, versão no ar, disco).

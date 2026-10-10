@@ -12,6 +12,12 @@ test("shows the temporary home page with the security headers", async ({ page })
   expect(response?.headers()["x-powered-by"]).toBeUndefined();
 });
 
+test("shows the app version in the footer (NBB-106 E6-A)", async ({ page }) => {
+  await page.goto("/");
+  // Sem NEXT_PUBLIC_APP_VERSION no build (local e CI), a versão é "dev".
+  await expect(page.getByRole("contentinfo")).toHaveText("dev");
+});
+
 test("runs the page scripts under the CSP (no violations)", async ({ page }) => {
   const violations: string[] = [];
   page.on("console", (message) => {
