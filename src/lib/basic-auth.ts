@@ -9,7 +9,8 @@ function sha256(value: string): Buffer {
 
 // Compara em tempo constante: o tempo de resposta não revela quantos caracteres estavam certos.
 // O hash iguala o tamanho dos dois lados, exigência do `timingSafeEqual`. Nada é armazenado: o
-// SHA-256 aqui não é "hash de senha" (esse papel é do Better Auth, ADR-0002).
+// SHA-256 aqui não é "hash de senha" (esse papel é do Better Auth, ADR-0002). Por isso, o alerta
+// js/insufficient-password-hash do CodeQL foi fechado como falso positivo (NBB-106 Z1-A), como no Orçô.
 export function safeEqual(a: string, b: string): boolean {
   return timingSafeEqual(sha256(a), sha256(b));
 }
