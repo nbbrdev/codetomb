@@ -12,7 +12,7 @@ O público são desenvolvedores, e quase todos têm conta no GitHub. O usuário 
 - **Confirmação de e-mail** obrigatória para participar. O GitHub conta como confirmado.
 - **Vínculo automático** das duas formas de login quando o e-mail é o mesmo e está **verificado nos dois lados**.
 - **Cadastro sem CAPTCHA:** 3 por hora por IP, honeypot e teto de 60 e-mails de cadastro por dia, conferidos numa Server Action. As rotas públicas de cadastro do Better Auth ficam desligadas.
-- Uma **OAuth App do GitHub por ambiente** (I7-A).
+- Uma **OAuth App do GitHub por ambiente** (I7-A): a local e a da produção (não há staging, ADR-0010).
 
 ## Alternativas descartadas
 - Só GitHub (N1-A): mais simples, mas exclui quem não tem conta lá.

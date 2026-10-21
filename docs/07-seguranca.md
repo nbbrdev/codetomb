@@ -13,7 +13,7 @@
 - **Cadastro sem CAPTCHA** (RN-39, S4-A): limite por IP, honeypot e teto diário de e-mails, conferidos pela Server Action **antes** de criar a conta. As rotas públicas de cadastro, reenvio e recuperação do Better Auth ficam **desligadas** (`disabledPaths`), para ninguém pular essa proteção chamando a API direto.
 - Mensagens que **não revelam se uma conta existe** (F-02, F-03, F-04).
 - Redefinir a senha encerra todas as sessões da conta.
-- **GitHub OAuth:** uma OAuth App por ambiente (I7-A), cada uma só com o endereço de retorno do seu domínio. O segredo de cada uma fica só no `.env` do ambiente.
+- **GitHub OAuth:** uma OAuth App por ambiente (I7-A: a local e a da produção), cada uma só com o endereço de retorno do seu domínio. O segredo de cada uma fica só no `.env` do ambiente.
 - **Usuário bloqueado** (RN-36) não consegue entrar, e as sessões dele são encerradas no bloqueio.
 
 ## 2. Sessão

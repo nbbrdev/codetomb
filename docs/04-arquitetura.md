@@ -37,7 +37,7 @@ flowchart LR
     end
     subgraph VPS["VPS (Ubuntu)"]
       NG[Nginx + Certbot<br/>HTTPS]
-      subgraph Compose["projeto Compose (por ambiente)"]
+      subgraph Compose["projeto Compose (produção)"]
         PX[proxy.ts<br/>CSP, "Em breve"]
         APP[Server Components<br/>Server Actions<br/>Better Auth]
         IMG[Rota de imagens<br/>cache imutável]
