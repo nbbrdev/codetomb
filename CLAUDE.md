@@ -3,7 +3,7 @@
 @AGENTS.md
 
 Rede social para desenvolvedores divulgarem projetos abandonados e o motivo, conversarem e, quem sabe, revivê-los em equipe (slug técnico `codetomb`). Next.js 16 + PostgreSQL 17 (Drizzle, RLS) + Better Auth + RustFS, numa **VPS própria com Docker Compose e Nginx** (a mesma do Orçô; guia da máquina no repositório privado `nbbrdev/vps`).
-Produção: <https://codetomb.nbbrdev.com> ("Em breve" até a `v1.0.0`) · Staging: <https://staging.codetomb.nbbrdev.com> · Repo: `nbbrdev/codetomb` (público) · Linear: time "Nbbr dev" (chave `NBB`), projeto "Codetomb".
+Produção: <https://codetomb.nbbrdev.com> ("Em breve" até a `v1.0.0`) · **Sem staging** (ADR-0010): só produção por release; o preview é local · Repo: `nbbrdev/codetomb` (público) · Linear: time "Nbbr dev" (chave `NBB`), projeto "Codetomb".
 
 ## Fontes da verdade
 - **Conteúdo:** `docs/`. Leia `docs/README.md` primeiro. Escopo em `docs/02-escopo.md`: **nada fora dele é implementado**.
@@ -12,13 +12,14 @@ Produção: <https://codetomb.nbbrdev.com> ("Em breve" até a `v1.0.0`) · Stagi
 
 ## Fase atual
 **M0: Fundação** (meta: `v0.1.0`). Planejamento fechado com o usuário em 2026-10-06 (rodadas N, P, I, S e F, registradas nos docs e nos ADRs). Ordem das issues da M0:
-1. Projeto Next (create-next-app, ESLint, Prettier, Vitest, Playwright, shadcn, `proxy.ts`).
-2. Workflows e proteção da `main`.
-3. Banco local (`compose.dev.yaml`, Drizzle, roles e teste de RLS).
-4. Rodada V (identidade visual).
-5. Deploy (Dockerfile, `deploy/`, staging, "Em breve" na produção).
-6. VPS, DNS, Resend e OAuth Apps (o usuário faz, com o passo a passo).
-7. Fechamento da M0 (`v0.1.0`).
+1. ✅ Projeto Next (NBB-102).
+2. ✅ Workflows e proteção da `main` (NBB-103).
+3. ✅ Banco local, roles e base de segurança (NBB-104).
+4. ✅ Rodada V, identidade visual (NBB-105).
+5. ✅ Deploy: Dockerfile, `deploy/`, "Em breve" na produção (NBB-106).
+6. Remover o staging (NBB-121, decisão do usuário em 2026-10-21).
+7. VPS, DNS e GitHub da produção (NBB-107, o usuário faz, com o passo a passo). O Resend e as OAuth Apps foram para a M1 (NBB-118 e NBB-119).
+8. Fechamento da M0 (`v0.1.0`, NBB-108).
 
 Lembretes:
 - Pendências em `docs/pendencias.md`. Regras ⏳ ainda não foram confirmadas pelo usuário.

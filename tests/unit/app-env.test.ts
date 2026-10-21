@@ -8,11 +8,12 @@ describe("getAppEnv", () => {
     expect(getAppEnv("")).toBe("development");
   });
 
-  it.each(["development", "staging", "production"] as const)("accepts %s", (value) => {
+  it.each(["development", "production"] as const)("accepts %s", (value) => {
     expect(getAppEnv(value)).toBe(value);
   });
 
-  it.each(["prod", "Staging", "preview"])("rejects %s", (value) => {
+  // Não há staging (ADR-0010): um .env antigo com APP_ENV=staging falha alto, em vez de virar outra coisa.
+  it.each(["staging", "prod", "Production", "preview"])("rejects %s", (value) => {
     expect(() => getAppEnv(value)).toThrow(/APP_ENV inválido/);
   });
 });

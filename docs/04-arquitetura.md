@@ -18,11 +18,11 @@
 | Autenticação | **Better Auth**: GitHub, e-mail e senha, confirmação, recuperação, vínculo de contas; sessões no Postgres | N1-C, P3-A, [ADR-0002](decisoes/0002-auth-better-auth.md) |
 | Arquivos | **RustFS** (compatível com S3) via `@aws-sdk/client-s3`; imagens processadas pelo **sharp** | P6-A, I4-A, [ADR-0004](decisoes/0004-imagens-rustfs-sharp.md) |
 | Markdown | Renderização no servidor, sem HTML bruto e sem imagens externas | P7-B, S8-A, [ADR-0005](decisoes/0005-markdown-seguro.md) |
-| E-mail | **Nodemailer + SMTP**: Mailpit no local, Resend no staging e na produção | I5-A, [ADR-0006](decisoes/0006-email-smtp.md) |
+| E-mail | **Nodemailer + SMTP**: Mailpit no local, Resend na produção | I5-A, [ADR-0006](decisoes/0006-email-smtp.md) |
 | Limites de uso | Tabela e função no Postgres | S4-A, S5-A |
 | Testes | Vitest (unidade e integração com banco real) e Playwright (E2E) | P4-A |
 | Qualidade e segurança do código | ESLint, Prettier, GitHub Actions, CodeQL, Dependabot, secret scanning | F1-A, [ADR-0009](decisoes/0009-github-ci-codeql-dependabot.md) |
-| Hospedagem | **VPS própria** (a mesma do Orçô) com **Docker Compose**, **Nginx e Certbot**; imagens no **GHCR**; deploy por SSH a partir do GitHub Actions | I2-A, [ADR-0007](decisoes/0007-hospedagem-vps.md) |
+| Hospedagem | **VPS própria** (a mesma do Orçô) com **Docker Compose**, **Nginx e Certbot**; imagens no **GHCR**; deploy por SSH a partir do GitHub Actions, só na release; sem staging | [ADR-0007](decisoes/0007-hospedagem-vps.md), [ADR-0010](decisoes/0010-sem-staging.md) |
 | Versões | SemVer escolhido pelo usuário; tag `vX.Y.Z` por `gh release create` → `production.yml` | F4-A, [ADR-0008](decisoes/0008-versionamento-releases-e-em-breve.md) |
 
 **Fora por ora:** Sentry, CAPTCHA, serviço de busca separado (a busca usa o próprio Postgres), fila de tarefas.
@@ -37,8 +37,8 @@ flowchart LR
     end
     subgraph VPS["VPS (Ubuntu)"]
       NG[Nginx + Certbot<br/>HTTPS]
-      subgraph Compose["projeto Compose (por ambiente)"]
-        PX[proxy.ts<br/>CSP, Basic Auth do staging]
+      subgraph Compose["projeto Compose (produção)"]
+        PX[proxy.ts<br/>CSP, "Em breve"]
         APP[Server Components<br/>Server Actions<br/>Better Auth]
         IMG[Rota de imagens<br/>cache imutável]
         DB[(Postgres<br/>RLS)]
@@ -88,7 +88,7 @@ flowchart LR
 │   │   ├── storage/           cliente S3 do RustFS (server-only)
 │   │   ├── images/            processamento com o sharp (server-only)
 │   │   └── markdown/          renderização segura
-│   └── proxy.ts               CSP com nonce, Basic Auth do staging, "Em breve" na produção
+│   └── proxy.ts               CSP com nonce e "Em breve" na produção
 ├── tests/
 │   ├── unit/                  Vitest, sem banco
 │   ├── integration/           Vitest contra Postgres e RustFS reais

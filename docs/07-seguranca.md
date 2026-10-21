@@ -13,7 +13,7 @@
 - **Cadastro sem CAPTCHA** (RN-39, S4-A): limite por IP, honeypot e teto diário de e-mails, conferidos pela Server Action **antes** de criar a conta. As rotas públicas de cadastro, reenvio e recuperação do Better Auth ficam **desligadas** (`disabledPaths`), para ninguém pular essa proteção chamando a API direto.
 - Mensagens que **não revelam se uma conta existe** (F-02, F-03, F-04).
 - Redefinir a senha encerra todas as sessões da conta.
-- **GitHub OAuth:** uma OAuth App por ambiente (I7-A), cada uma só com o endereço de retorno do seu domínio. O segredo de cada uma fica só no `.env` do ambiente.
+- **GitHub OAuth:** uma OAuth App por ambiente (I7-A: a local e a da produção), cada uma só com o endereço de retorno do seu domínio. O segredo de cada uma fica só no `.env` do ambiente.
 - **Usuário bloqueado** (RN-36) não consegue entrar, e as sessões dele são encerradas no bloqueio.
 
 ## 2. Sessão
@@ -76,12 +76,11 @@
 
 - Server Actions do Next conferem a origem. Rotas que mudam estado nunca são `GET`.
 
-## 9. Staging
+## 9. Ambientes
 
-- **HTTP Basic Auth em todas as rotas, sem exceções por enquanto** (NBB-106 E5-A). O retorno do login do GitHub (M1) passa pelo navegador, que já tem a senha guardada. Exceções entram quando surgir a necessidade, com teste.
-- A senha é comparada em tempo constante (`src/lib/basic-auth.ts`). Sem as credenciais configuradas, o staging responde **503**: nunca fica aberto por esquecimento.
-- `X-Robots-Tag: noindex, nofollow` e dados sempre fictícios.
-- **Produção antes do lançamento:** toda rota mostra o "Em breve", com `noindex`; o site só abre com `PUBLIC_LAUNCH=true` (fechado por padrão, ADR-0008).
+- **Não há staging** ([ADR-0010](decisoes/0010-sem-staging.md), 2026-10-21). O Basic Auth que o protegia (NBB-106 E5-A) foi removido; se um dia voltar, está no histórico do Git e no Orçô.
+- **Produção antes do lançamento:** toda rota mostra o "Em breve", com `X-Robots-Tag: noindex, nofollow`; o site só abre com `PUBLIC_LAUNCH=true` (fechado por padrão, ADR-0008).
+- **Local:** dados sempre fictícios.
 
 ## 10. Segredos e repositório público
 

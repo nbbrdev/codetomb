@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Deploy de um ambiente do Codetomb na VPS (ADR-0007, docs/08-infra-deploy.md).
+# Deploy da produção do Codetomb na VPS (ADR-0007, docs/08-infra-deploy.md). Não há staging
+# (ADR-0010): o único ambiente é a produção, e só uma release (tag vX.Y.Z) chega até aqui.
 #
-# É o ÚNICO comando que as chaves SSH de deploy do GitHub conseguem rodar. No authorized_keys do
-# usuário deploy, cada chave fica presa a um ambiente:
-#   command="/opt/codetomb/bin/deploy.sh staging",restrict ssh-ed25519 AAAA... codetomb-staging-deploy
+# É o ÚNICO comando que a chave SSH de deploy do GitHub consegue rodar. No authorized_keys do
+# usuário deploy, a chave fica presa a ele:
 #   command="/opt/codetomb/bin/deploy.sh production",restrict ssh-ed25519 AAAA... codetomb-production-deploy
 #
 # O ambiente vem da chave ($1). O workflow só escolhe QUAL imagem subir: o pedido chega em
-# $SSH_ORIGINAL_COMMAND no formato <tag>@sha256:<digest>, e qualquer outra coisa é recusada.
+# $SSH_ORIGINAL_COMMAND no formato vX.Y.Z@sha256:<digest>, e qualquer outra coisa é recusada.
 # Os arquivos de deploy (compose.yaml, init.sh, roles.sql) saem de dentro da imagem, nunca do SSH.
 #
 # Instalação (deploy/README.md): /opt/codetomb/bin/deploy.sh, dono root, modo 755. O usuário deploy
@@ -25,26 +25,22 @@ fail() {
 env_name="${1:-}"
 request="${SSH_ORIGINAL_COMMAND:-}"
 
-# Formato da etiqueta aceito em cada ambiente.
-case "$env_name" in
-  staging) tag_pattern='staging-[0-9a-f]{40}' ;;
-  production) tag_pattern='v[0-9]+\.[0-9]+\.[0-9]+' ;;
-  *) fail "ambiente inválido: use staging ou production." ;;
-esac
+# Só a produção existe. O nome continua no comando da chave para deixar claro qual ambiente ela abre.
+[[ "$env_name" == "production" ]] || fail "ambiente inválido: use production."
 
-# Pedido inteiro validado: etiqueta do ambiente + digest (a impressão digital exata da imagem).
-readonly request_pattern="^${tag_pattern}@sha256:[0-9a-f]{64}\$"
+# Pedido inteiro validado: etiqueta da versão + digest (a impressão digital exata da imagem).
+readonly request_pattern='^v[0-9]+\.[0-9]+\.[0-9]+@sha256:[0-9a-f]{64}$'
 if ! [[ "$request" =~ $request_pattern ]]; then
-  fail "pedido recusado. Formato esperado para $env_name: <tag>@sha256:<digest>."
+  fail "pedido recusado. Formato esperado: vX.Y.Z@sha256:<digest>."
 fi
 
 readonly image="${REGISTRY}:${request}"
 readonly dir="${ROOT}/${env_name}"
 [[ -f "$dir/.env" ]] || fail "falta $dir/.env (veja deploy/README.md)."
 
-# Um deploy por vez neste ambiente.
+# Um deploy por vez.
 exec 9>"$dir/.deploy.lock"
-flock -n 9 || fail "outro deploy de $env_name está em andamento."
+flock -n 9 || fail "outro deploy está em andamento."
 
 echo "==> Baixando $image"
 docker pull --quiet "$image"
@@ -79,4 +75,4 @@ compose up --detach --remove-orphans
 echo "==> Limpando imagens antigas"
 docker image prune --all --force --filter "until=168h" >/dev/null
 
-echo "Deploy de $env_name concluído: $request"
+echo "Deploy concluído: $request"

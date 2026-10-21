@@ -15,7 +15,7 @@ O repositório serve de portfólio, e o fluxo de trabalho (um PR por issue, revi
   - histórico linear e conversas resolvidas;
   - sem force push nem exclusão;
   - merge só por squash, com a branch apagada depois.
-- **Workflows:** `ci.yml` (Prettier, lint, tipos, testes de unidade e integração com Postgres e RustFS reais, build, E2E, `npm audit`), `codeql.yml`, `pr-title.yml`, `deploy-vps.yml`, `staging.yml` e `production.yml`.
+- **Workflows:** `ci.yml` (Prettier, lint, tipos, testes de unidade e integração com banco real, build, E2E, `npm audit` e, desde a NBB-121, o build da imagem Docker), `codeql.yml`, `pr-title.yml` e `production.yml` (verificação, build e deploy da release). Os antigos `deploy-vps.yml` e `staging.yml` saíram com o staging (ADR-0010).
 - **Dependabot**, **secret scanning com push protection** e `CODEOWNERS`.
 
 ## Alternativas descartadas
