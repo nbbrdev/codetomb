@@ -8,8 +8,8 @@ O login por e-mail e senha (N1-C) precisa mandar a confirmação de cadastro e a
 
 ## Decisão
 - **Nodemailer com SMTP**, trocável por configuração.
-- **Resend** no staging e na produção, com o domínio `codetomb.nbbrdev.com` verificado. Remetente: `Codetomb <nao-responda@codetomb.nbbrdev.com>`.
-- Uma API key por ambiente, só com permissão de envio e só para esse domínio.
+- **Resend** na produção (não há staging, ADR-0010), com o domínio `codetomb.nbbrdev.com` verificado. Remetente: `Codetomb <nao-responda@codetomb.nbbrdev.com>`.
+- Uma API key da produção, só com permissão de envio e só para esse domínio.
 - **Mailpit** no desenvolvimento local e no CI.
 
 ## Alternativas descartadas

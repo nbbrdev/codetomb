@@ -76,12 +76,11 @@
 
 - Server Actions do Next conferem a origem. Rotas que mudam estado nunca são `GET`.
 
-## 9. Staging
+## 9. Ambientes
 
-- **HTTP Basic Auth em todas as rotas, sem exceções por enquanto** (NBB-106 E5-A). O retorno do login do GitHub (M1) passa pelo navegador, que já tem a senha guardada. Exceções entram quando surgir a necessidade, com teste.
-- A senha é comparada em tempo constante (`src/lib/basic-auth.ts`). Sem as credenciais configuradas, o staging responde **503**: nunca fica aberto por esquecimento.
-- `X-Robots-Tag: noindex, nofollow` e dados sempre fictícios.
-- **Produção antes do lançamento:** toda rota mostra o "Em breve", com `noindex`; o site só abre com `PUBLIC_LAUNCH=true` (fechado por padrão, ADR-0008).
+- **Não há staging** ([ADR-0010](decisoes/0010-sem-staging.md), 2026-10-21). O Basic Auth que o protegia (NBB-106 E5-A) foi removido; se um dia voltar, está no histórico do Git e no Orçô.
+- **Produção antes do lançamento:** toda rota mostra o "Em breve", com `X-Robots-Tag: noindex, nofollow`; o site só abre com `PUBLIC_LAUNCH=true` (fechado por padrão, ADR-0008).
+- **Local:** dados sempre fictícios.
 
 ## 10. Segredos e repositório público
 

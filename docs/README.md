@@ -4,7 +4,7 @@
 
 Esta pasta é a **fonte da verdade do conteúdo** do projeto. O **planejamento e o andamento** (fases, marcos, issues) ficam no **Linear**, projeto **Codetomb** (time Nbbr dev, chave `NBB`).
 
-**Produção:** https://codetomb.nbbrdev.com ("Em breve" até a `v1.0.0`) · **Staging:** https://staging.codetomb.nbbrdev.com · **Repositório:** https://github.com/nbbrdev/codetomb
+**Produção:** https://codetomb.nbbrdev.com ("Em breve" até a `v1.0.0`; não há staging, [ADR-0010](decisoes/0010-sem-staging.md)) · **Repositório:** https://github.com/nbbrdev/codetomb
 
 ## Índice
 
@@ -29,7 +29,7 @@ Esta pasta é a **fonte da verdade do conteúdo** do projeto. O **planejamento e
 
 | # | Marco | Objetivo | Versão |
 |---|---|---|---|
-| M0 | Fundação | Docs, repositório e proteções, projeto Next, banco local com roles, identidade visual, CI, deploy do staging e "Em breve" na produção | `0.1.0` |
+| M0 | Fundação | Docs, repositório e proteções, projeto Next, banco local com roles, identidade visual, CI, deploy por release e "Em breve" na produção | `0.1.0` |
 | M1 | Contas | Login com GitHub e com e-mail, confirmação, recuperação de senha, vínculo de contas, perfil, avatar, exclusão de conta | `0.2.0` |
 | M2 | Projetos | Criar, editar e excluir projetos, estados, tags, galeria, Markdown, página pública do projeto | `0.3.0` |
 | M3 | Interação | Comentários com resposta, reações, atualizações com imagens | `0.4.0` |
@@ -39,7 +39,7 @@ Esta pasta é a **fonte da verdade do conteúdo** do projeto. O **planejamento e
 
 **Fase atual: M0 (Fundação).**
 
-Até a `v1.0.0`, a produção mostra só a página "Em breve" ([ADR-0008](decisoes/0008-versionamento-releases-e-em-breve.md)). As fases são testadas no staging.
+Até a `v1.0.0`, a produção mostra só a página "Em breve" ([ADR-0008](decisoes/0008-versionamento-releases-e-em-breve.md)). As fases são testadas localmente: não há staging ([ADR-0010](decisoes/0010-sem-staging.md)).
 
 ## Como manter
 

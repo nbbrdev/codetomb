@@ -92,3 +92,8 @@ jobs:
       # desenvolvimento chegam pelo Dependabot, sem travar o CI (NBB-102 V1-A, docs/07 §11).
       - name: Auditoria de dependências
         run: npm audit --audit-level=high --omit=dev
+
+      # Sem staging (ADR-0010), a imagem só seria construída de verdade no release. Construí-la aqui,
+      # sem enviar a lugar nenhum, garante que um Dockerfile quebrado nunca chega à main (NBB-121 R3-A).
+      - name: Imagem Docker (build, sem envio)
+        run: docker build --build-arg NEXT_PUBLIC_APP_VERSION=ci --tag codetomb:ci .

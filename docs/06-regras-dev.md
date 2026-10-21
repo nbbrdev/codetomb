@@ -48,7 +48,8 @@ Antes de qualquer feature ou PR: **isso adiciona passo, campo obrigatório ou te
 
 ## 4.1 Versões e releases ([ADR-0008](decisoes/0008-versionamento-releases-e-em-breve.md))
 
-- **Merge na `main` = deploy automático no staging.** Produção só recebe **versões criadas pelo usuário** (`gh release create vX.Y.Z --target main --generate-notes`). O agente nunca cria tag nem release.
+- **Merge na `main` não publica nada:** só roda o CI. Não há staging ([ADR-0010](decisoes/0010-sem-staging.md)). A produção só recebe **versões criadas pelo usuário** (`gh release create vX.Y.Z --target main --generate-notes`), pelo `production.yml`. O agente nunca cria tag nem release.
+- **Antes de um release, o preview local** (§7) é o ensaio: é a última vez que a versão roda antes de chegar à VPS.
 - SemVer: algum `feat` → sobe o minor; só `fix`/`perf`/`security` → sobe o patch; `1.0.0` no lançamento.
 - Antes de publicar: CI verde no último commit da `main` e, a partir da primeira release depois da `v1.0.0`, backup do banco da produção (I6-A).
 - A versão é a tag: sem `version` no `package.json` e sem `CHANGELOG.md`. O app mostra a versão por `NEXT_PUBLIC_APP_VERSION`, injetada no build.
@@ -72,7 +73,7 @@ Antes de qualquer feature ou PR: **isso adiciona passo, campo obrigatório ou te
 - Fluxo de uma mudança: editar o schema → `npm run db:generate -- <nome>` → **revisar o SQL** (RLS, policies, grants e funções podem ser escritos à mão na migration) → `npm run db:reset` para testar do zero.
 - Tabela nova = `ENABLE` e `FORCE ROW LEVEL SECURITY`, policies, grants e **teste de RLS**, no mesmo PR, e [05-dados.md](05-dados.md) atualizado.
 - Uma migration aplicada nunca é editada. Toda migration é compatível com a versão anterior do código (o banco muda antes do código no deploy).
-- Nunca alterar o banco do staging ou da produção à mão. A única exceção é o comando SQL documentado para promover um admin (RN-37).
+- Nunca alterar o banco da produção à mão. A única exceção é o comando SQL documentado para promover um admin (RN-37).
 - O app roda localmente em `http://localhost:3010` (`npm run dev` e `npm run start`; NBB-102 D3-A).
 - **Banco local (NBB-104):** `npm run db:start` / `db:stop` sobem e descem o `compose.dev.yaml`, com as portas do Orçô + 10 para os dois projetos rodarem juntos (B1-A):
   - Postgres em `127.0.0.1:55442`;
@@ -102,6 +103,11 @@ Antes de qualquer feature ou PR: **isso adiciona passo, campo obrigatório ou te
 | `npm run test:coverage` | unitários e integração numa execução só, com o relatório de cobertura (no terminal e em `coverage/index.html`) |
 | `npm run test:e2e` | E2E com o Playwright (precisa de `npm run build` antes; na primeira vez, `npx playwright install chromium`) |
 
+**Preview local (NBB-121 R4-A):** não há preview por PR nem staging ([ADR-0010](decisoes/0010-sem-staging.md)).
+- No dia a dia: `npm run dev` em `http://localhost:3010`, inclusive no celular pela mesma Wi-Fi (o `allowedDevOrigins` libera as redes `192.168.*.*` e `10.*.*.*`).
+- **Antes de um release:** `npm run build && npm run start`, que roda o app compilado como na produção (com o banco local ligado). O "Em breve" não aparece aqui, porque o ambiente é `development`.
+- A imagem Docker é construída pelo CI em todo PR (R3-A). Para testá-la localmente, quando o `Dockerfile` mudar: `docker build -t codetomb:local .` e `docker run --rm -p 127.0.0.1:3020:3000 -e APP_ENV=production -e SITE_URL=http://localhost:3020 codetomb:local`, que mostra o "Em breve" em `http://localhost:3020`.
+
 - Bug corrigido = teste que reproduz o bug.
 - Dados sempre fictícios (`@example.com`), nunca reais.
 - Testes de integração criam e apagam o que usam, sem depender da ordem.
@@ -111,7 +117,7 @@ Antes de qualquer feature ou PR: **isso adiciona passo, campo obrigatório ou te
 - Todo arquivo dessas pastas aparece no relatório, mesmo sem teste, para nada ficar escondido. Ficam de fora as Server Actions (`actions.ts`), o `src/lib/utils.ts` e os componentes `.tsx`, que o E2E testa.
 - **Trava no CI:** 80% de linhas, comandos e funções. O CI falha se ficar abaixo.
 
-**No CI (`.github/workflows/ci.yml`):** Prettier → lint → tipos → roles e migrations num Postgres temporário (service container) → testes com cobertura → build → E2E → `npm audit --audit-level=high --omit=dev`. O CodeQL (`codeql.yml`) e o título do PR (`pr-title.yml`) rodam em workflows próprios.
+**No CI (`.github/workflows/ci.yml`):** Prettier → lint → tipos → roles e migrations num Postgres temporário (service container) → testes com cobertura → build → E2E → `npm audit --audit-level=high --omit=dev` → build da imagem Docker, sem envio (NBB-121 R3-A). O CodeQL (`codeql.yml`) e o título do PR (`pr-title.yml`) rodam em workflows próprios.
 
 ## 8. Variáveis de ambiente
 
@@ -119,17 +125,16 @@ Listadas, sem valores, em `.env.example` e `deploy/env.example`. Segredos só no
 
 | Variável | Segredo? |
 |---|---|
-| `APP_ENV` (`development`, `staging`, `production`), `SITE_URL` | não |
+| `APP_ENV` (`development` ou `production`; não há staging, ADR-0010), `SITE_URL` | não |
 | `DATABASE_URL_APP`, `DATABASE_URL_AUTH`, `DATABASE_URL_OWNER` (só no serviço `migrate`) | **sim** |
 | `BETTER_AUTH_SECRET` | **sim** |
-| `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` (uma OAuth App por ambiente, I7-A) | **sim** |
+| `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` (uma OAuth App local e uma da produção, I7-A) | **sim** |
 | `S3_ENDPOINT`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` | **sim** |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `EMAIL_FROM` | **sim** |
-| `STAGING_BASIC_AUTH_USER`, `STAGING_BASIC_AUTH_PASSWORD` (só no staging; sem elas, o staging responde 503) | **sim** |
 | `PUBLIC_LAUNCH` (só na produção; `true` abre o site, ausente = "Em breve", NBB-106 E3-A) | não |
-| `NEXT_PUBLIC_APP_VERSION` (injetada no build: `vX.Y.Z`, `staging-<commit>`; ausente = `dev`) | não |
+| `NEXT_PUBLIC_APP_VERSION` (injetada no build: `vX.Y.Z`; ausente = `dev`) | não |
 
-- **Na VPS:** `APP_PORT`, `DB_PORT`, `POSTGRES_PASSWORD` e as senhas das roles (`CODETOMB_OWNER_PASSWORD`, `APP_USER_PASSWORD`, `APP_AUTH_PASSWORD`) também ficam no `.env` de cada ambiente; o `deploy/compose.yaml` monta as `DATABASE_URL_*` a partir delas. Variável nova do app entra no `environment:` do serviço `app` e no `deploy/env.example`.
+- **Na VPS:** `APP_PORT`, `DB_PORT`, `POSTGRES_PASSWORD` e as senhas das roles (`CODETOMB_OWNER_PASSWORD`, `APP_USER_PASSWORD`, `APP_AUTH_PASSWORD`) também ficam no `.env` da produção; o `deploy/compose.yaml` monta as `DATABASE_URL_*` a partir delas. Variável nova do app entra no `environment:` do serviço `app` e no `deploy/env.example`.
 
 ## 9. Definição de pronto (DoD)
 
@@ -138,4 +143,4 @@ Listadas, sem valores, em `.env.example` e `deploy/env.example`. Segredos só no
 - [ ] Checklist de segurança do PR ok
 - [ ] Testado no celular (360 px) e no computador, em tema claro e escuro
 - [ ] `docs/` e Linear Docs atualizados, se algo mudou
-- [ ] Testado localmente antes do merge e conferido no staging depois (não há preview por PR)
+- [ ] Testado localmente antes do merge (não há preview por PR nem staging, ADR-0010)

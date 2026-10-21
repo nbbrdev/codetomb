@@ -1,6 +1,7 @@
 // Ambiente do app, definido por nós (e não pela plataforma), igual em qualquer hospedagem.
+// Só dois: a máquina de quem desenvolve e a produção. Não há staging (ADR-0010, NBB-121).
 // Veja docs/06-regras-dev.md §8.
-export const APP_ENVS = ["development", "staging", "production"] as const;
+export const APP_ENVS = ["development", "production"] as const;
 
 export type AppEnv = (typeof APP_ENVS)[number];
 

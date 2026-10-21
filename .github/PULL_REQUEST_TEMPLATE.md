@@ -30,7 +30,7 @@ correções fora do escopo. Depois do OK, troque o título para
 
 ## Como testar
 
-<!-- Não há preview por PR: teste a branch localmente e, depois do merge, no staging. -->
+<!-- Não há preview por PR nem staging (ADR-0010): teste a branch localmente (npm run dev; antes de um release, npm run build && npm run start). -->
 
 1.
 

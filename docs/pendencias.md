@@ -25,5 +25,5 @@
 | # | Pergunta | Quando |
 |---|---|---|
 | P-09 | ~~Portas locais~~ **Resolvido:** app 3010 (NBB-102 D3-A); Postgres 55442, RustFS 9010/9011 e Mailpit 1035/8035 (NBB-104 B1-A). | — |
-| P-10 | ~~Rotas fora do Basic Auth no staging~~ **Resolvido:** nenhuma por enquanto; exceções entram quando surgir a necessidade (NBB-106 E5-A). | — |
+| P-10 | ~~Rotas fora do Basic Auth no staging~~ **Resolvido:** nenhuma (NBB-106 E5-A). **Obsoleto desde 2026-10-21:** não há staging (ADR-0010). | — |
 | P-11 | Nome do bucket do RustFS | M2 |

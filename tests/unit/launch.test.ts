@@ -19,7 +19,7 @@ describe("isComingSoon (ADR-0008, NBB-106 E3-A)", () => {
     expect(isComingSoon("production", "true")).toBe(false);
   });
 
-  it.each(["development", "staging"] as const)("never shows it in %s", (appEnv) => {
-    expect(isComingSoon(appEnv, undefined)).toBe(false);
+  it("never shows it in development", () => {
+    expect(isComingSoon("development", undefined)).toBe(false);
   });
 });

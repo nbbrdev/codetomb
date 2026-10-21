@@ -1,11 +1,10 @@
-# Um ambiente do Codetomb na VPS (ADR-0007, docs/08-infra-deploy.md). O mesmo arquivo serve ao
-# staging e à produção, cada um na sua pasta (/opt/codetomb/staging, /opt/codetomb/production) e no seu
-# projeto do Compose (codetomb-staging, codetomb-production): redes e volumes separados, um não alcança
-# o outro, e nada daqui alcança o Orçô.
+# A produção do Codetomb na VPS (ADR-0007, docs/08-infra-deploy.md), na pasta /opt/codetomb/production
+# e no projeto do Compose codetomb-production: rede e volumes próprios, e nada daqui alcança o Orçô.
+# Não há staging (ADR-0010).
 #
 # Quem roda é o deploy.sh, que copia este arquivo de dentro da imagem de cada versão:
-#   docker compose -p codetomb-<ambiente> --env-file .env --env-file image.env run --rm migrate
-#   docker compose -p codetomb-<ambiente> --env-file .env --env-file image.env up -d
+#   docker compose -p codetomb-production --env-file .env --env-file image.env run --rm migrate
+#   docker compose -p codetomb-production --env-file .env --env-file image.env up -d
 # .env       segredos do ambiente, criado à mão na VPS (modelo: deploy/env.example)
 # image.env  CODETOMB_IMAGE=ghcr.io/nbbrdev/codetomb:<tag>@sha256:<digest>, escrito pelo deploy.sh
 #
@@ -22,7 +21,7 @@ services:
   app:
     image: ${CODETOMB_IMAGE:?defina CODETOMB_IMAGE (image.env)}
     restart: unless-stopped
-    # Só o Nginx da própria VPS alcança o app (127.0.0.1). Produção: 3010; staging: 3011.
+    # Só o Nginx da própria VPS alcança o app (127.0.0.1, porta 3010).
     ports:
       - "127.0.0.1:${APP_PORT:?defina APP_PORT}:3000"
     # Lista explícita: o app recebe só o que usa (nunca a senha do superusuário do banco).
@@ -32,8 +31,6 @@ services:
       SITE_URL: ${SITE_URL:?defina SITE_URL}
       DATABASE_URL_APP: postgres://app_user:${APP_USER_PASSWORD}@db:5432/codetomb
       DATABASE_URL_AUTH: postgres://app_auth:${APP_AUTH_PASSWORD}@db:5432/codetomb
-      STAGING_BASIC_AUTH_USER: ${STAGING_BASIC_AUTH_USER:-}
-      STAGING_BASIC_AUTH_PASSWORD: ${STAGING_BASIC_AUTH_PASSWORD:-}
       PUBLIC_LAUNCH: ${PUBLIC_LAUNCH:-}
     # Hardening: sistema de arquivos só de leitura (menos o cache do Next e o /tmp, em memória),
     # nenhuma capacidade especial do Linux e sem ganhar privilégios depois de iniciar.
@@ -69,7 +66,7 @@ services:
     restart: unless-stopped
     # Porta só em 127.0.0.1 da VPS: a internet não alcança (e o ufw nem precisa liberar). Serve para o
     # backup manual pelo DBeaver, que entra por um túnel SSH (deploy/README.md, "Backup pelo DBeaver").
-    # Produção: 5442; staging: 5443.
+    # Porta 5442.
     ports:
       - "127.0.0.1:${DB_PORT:?defina DB_PORT}:5432"
     environment:
