@@ -42,7 +42,7 @@ services:
   # Caixa de entrada de mentira (ADR-0006): SMTP em :1035, página em http://localhost:8035. Usado a
   # partir da M1.
   mailpit:
-    image: axllent/mailpit:v1.31.6
+    image: axllent/mailpit:v1.32.0
     ports:
       - "127.0.0.1:1035:1025"
       - "127.0.0.1:8035:8025"
