@@ -9,13 +9,13 @@
 #   /app/deploy     compose.yaml e bootstrap do banco, copiados para a VPS pelo deploy.sh
 
 # 1. Dependências completas (inclui as de desenvolvimento, necessárias para o build).
-FROM node:24.22.0-alpine3.24 AS deps
+FROM node:24.22.1-alpine3.24 AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
 # 2. Build do Next. Variáveis NEXT_PUBLIC_* são gravadas no código do navegador nesta etapa.
-FROM node:24.22.0-alpine3.24 AS build
+FROM node:24.22.1-alpine3.24 AS build
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
@@ -25,13 +25,13 @@ ENV NEXT_PUBLIC_APP_VERSION=$NEXT_PUBLIC_APP_VERSION
 RUN npm run build
 
 # 3. Só as dependências de produção, nas versões do lockfile, para o migrator.
-FROM node:24.22.0-alpine3.24 AS migrator
+FROM node:24.22.1-alpine3.24 AS migrator
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev --ignore-scripts
 
 # 4. Imagem final.
-FROM node:24.22.0-alpine3.24 AS runner
+FROM node:24.22.1-alpine3.24 AS runner
 LABEL org.opencontainers.image.source="https://github.com/nbbrdev/codetomb"
 LABEL org.opencontainers.image.description="Codetomb: o cemitério de projetos dos desenvolvedores."
 WORKDIR /app
